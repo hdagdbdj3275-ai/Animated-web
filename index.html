@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>A Special Surprise</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Aesthetic Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Mobile View Container -->
+  <div class="mobile-container">
+    
+    <!-- SCREEN 1: INTRO & DOOR -->
+    <section id="screen-intro" class="screen active">
+      <div class="intro-content">
+        <p class="subtitle">Someone made this just for you</p>
+        <h1 class="main-title">A Special Museum</h1>
+        <p class="instruction">Knock 3 times to enter</p>
+
+        <!-- Interactive Door Frame -->
+        <div class="door-frame" id="door">
+          <div class="door-inner">
+            <div class="door-handle"></div>
+            <div class="knock-target" id="knockBtn">
+              <span class="knock-ring"></span>
+            </div>
+          </div>
+        </div>
+
+        <p class="counter-text" id="knockCountText">Knocks: 0 / 3</p>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: PLACEHOLDER (Agla step) -->
+    <section id="screen-gallery" class="screen">
+      <div class="gallery-content">
+        <h2>Room 1: The Gallery</h2>
+        <p>Ready for the scratch card!</p>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
