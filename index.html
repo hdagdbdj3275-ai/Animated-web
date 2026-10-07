@@ -37,19 +37,82 @@
         <h2 class="room-title">Scratch to see it</h2>
         <p class="room-sub">Rub your finger across to reveal</p>
 
-        <!-- Scratch Card Box -->
         <div class="scratch-card-wrapper">
           <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=600&auto=format&fit=crop" 
                alt="Memory Photo" 
                id="scratchImage" 
                class="secret-photo">
           
-          <canvas id="scratchCanvas" width="280" height="340"></canvas>
+          <canvas id="scratchCanvas" width="280" height="320"></canvas>
         </div>
 
         <button id="nextRoomBtn" class="btn-primary" style="display: none;">
           Keep walking →
         </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: 9-PIECE PHOTO PUZZLE -->
+    <section id="screen-puzzle" class="screen">
+      <div class="puzzle-content">
+        <p class="room-tag">Room 2 • The Restoration Desk</p>
+        <h2 class="room-title">This photo fell apart.</h2>
+        <p class="room-sub">Tap two pieces to swap them</p>
+
+        <div class="puzzle-board" id="puzzleBoard"></div>
+
+        <div id="puzzleDoneBox" style="display: none;">
+          <p class="puzzle-win-msg">✨ You fixed it! ✨</p>
+          <button id="puzzleNextBtn" class="btn-primary">
+            Keep walking →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: ENVELOPE & LOVE LETTER -->
+    <section id="screen-letter" class="screen">
+      <div class="letter-content">
+        <p class="room-tag">Room 3 • A Letter For You</p>
+        
+        <!-- Interactive Envelope -->
+        <div class="envelope-wrapper" id="envelopeWrapper">
+          <div class="envelope" id="envelope">
+            <div class="envelope-flap"></div>
+            <div class="envelope-pocket"></div>
+            <div class="envelope-heart">💌</div>
+          </div>
+          <p class="tap-hint" id="tapHint">Tap the envelope to open</p>
+        </div>
+
+        <!-- The Letter Card (Opens when envelope tapped) -->
+        <div class="letter-paper" id="letterPaper">
+          <div class="letter-scroll-area">
+            <h3 class="letter-greeting">Hey love ❤️</h3>
+            <p class="letter-body">
+              I don't think I tell you this enough, but having you in my life is one of the best things that's ever happened to me. Thank you for always being there, making me laugh, and loving me even on days I'm difficult.<br><br>
+              I made this little space just to remind you how much you mean to me.
+            </p>
+            <p class="letter-sign">— Always Yours</p>
+
+            <!-- Voice Note Player Box -->
+            <div class="voice-box">
+              <button class="voice-play-btn" id="voicePlayBtn">▶</button>
+              <div class="voice-info">
+                <span class="voice-title">Hear me say it</span>
+                <span class="voice-time" id="voiceTime">0:00 / 0:15</span>
+              </div>
+              <!-- Demo audio file -->
+              <audio id="voiceAudio" src="https://actions.google.com/sounds/v1/water/rain_heavy.ogg"></audio>
+            </div>
+
+            <!-- Next Room Button -->
+            <button id="letterNextBtn" class="btn-primary" style="margin-top: 15px;">
+              One last room →
+            </button>
+          </div>
+        </div>
+
       </div>
     </section>
 
