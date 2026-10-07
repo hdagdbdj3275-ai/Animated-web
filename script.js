@@ -8,98 +8,124 @@ const door = document.getElementById('door');
 const screenIntro = document.getElementById('screen-intro');
 const screenGallery = document.getElementById('screen-gallery');
 
-knockBtn.addEventListener('click', () => {
-  if (knockCount >= maxKnocks) return;
+if (knockBtn) {
+  knockBtn.addEventListener('click', () => {
+    if (knockCount >= maxKnocks) return;
 
-  knockCount++;
-  knockCountText.textContent = `Knocks: ${knockCount} / ${maxKnocks}`;
+    knockCount++;
+    knockCountText.textContent = `Knocks: ${knockCount} / ${maxKnocks}`;
 
-  knockBtn.style.transform = 'scale(0.85)';
-  setTimeout(() => {
-    knockBtn.style.transform = 'scale(1)';
-  }, 120);
-
-  if (knockCount === maxKnocks) {
-    knockCountText.textContent = 'Welcome in...';
+    knockBtn.style.transform = 'scale(0.85)';
     setTimeout(() => {
-      door.classList.add('open');
-    }, 400);
+      knockBtn.style.transform = 'scale(1)';
+    }, 120);
 
-    setTimeout(() => {
-      screenIntro.classList.remove('active');
-      screenGallery.classList.add('active');
-      initScratchCard(); // Gallery open hone par scratch load karega
-    }, 1600);
-  }
-});
+    if (knockCount === maxKnocks) {
+      knockCountText.textContent = 'Welcome in...';
+      setTimeout(() => {
+        if (door) door.classList.add('open');
+      }, 400);
 
-// --- 2. SCRATCH CARD LOGIC ---
-function initScratchCard() {
+      setTimeout(() => {
+        screenIntro.classList.remove('active');
+        screenGallery.classList.add('active');
+        setupScratchCard();
+      }, 1500);
+    }
+  });
+}
+
+// Agar direct screen test ho rahi ho
+if (screenGallery && screenGallery.classList.contains('active')) {
+  setupScratchCard();
+}
+
+// --- 2. MOBILE TOUCH SCRATCH CARD ---
+function setupScratchCard() {
   const canvas = document.getElementById('scratchCanvas');
-  const ctx = canvas.getContext('2d');
+  const wrapper = document.querySelector('.scratch-card-wrapper');
   const nextBtn = document.getElementById('nextRoomBtn');
-  let isScratching = false;
+  if (!canvas || !wrapper) return;
+
+  const ctx = canvas.getContext('2d');
+
+  // Device pixel ratio aur exact card size match karna
+  const rect = wrapper.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
 
   // Golden Cover Layer
-  ctx.fillStyle = '#e2b380';
+  ctx.fillStyle = '#d4a373';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Cover Text
-  ctx.fillStyle = '#7a4b18';
-  ctx.font = 'bold 16px Poppins';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px Poppins, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✨ Scratch to reveal ✨', canvas.width / 2, canvas.height / 2);
+  ctx.fillText('✨ Scratch here ✨', canvas.width / 2, canvas.height / 2);
 
-  function scratch(e) {
-    if (!isScratching) return;
+  let isDrawing = false;
+  let revealed = false;
 
-    const rect = canvas.getBoundingClientRect();
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
     const touch = e.touches ? e.touches[0] : e;
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
-
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x, y, 24, 0, Math.PI * 2);
-    ctx.fill();
-
-    checkScratchPercentage();
+    return {
+      x: touch.clientX - r.left,
+      y: touch.clientY - r.top
+    };
   }
 
-  // Calculate kitna scratch ho chuka hai
-  let revealed = false;
-  function checkScratchPercentage() {
+  function startScratch(e) {
+    isDrawing = true;
+    scratch(e);
+  }
+
+  function stopScratch() {
+    isDrawing = false;
+    checkProgress();
+  }
+
+  function scratch(e) {
+    if (!isDrawing || revealed) return;
+    if (e.cancelable) e.preventDefault(); // Screen scrolling rokna touch ke waqt
+
+    const pos = getPos(e);
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function checkProgress() {
     if (revealed) return;
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = imageData.data;
-    let transparentPixels = 0;
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imgData.data;
+    let transparent = 0;
 
     for (let i = 3; i < pixels.length; i += 4) {
-      if (pixels[i] === 0) transparentPixels++;
+      if (pixels[i] === 0) transparent++;
     }
 
-    const percent = (transparentPixels / (pixels.length / 4)) * 100;
-    // 40% se zyada scratch hone par poora clear ho jaye aur button show ho
-    if (percent > 40) {
+    const percent = (transparent / (pixels.length / 4)) * 100;
+    if (percent > 35) {
       revealed = true;
-      canvas.style.transition = 'opacity 0.6s ease';
+      canvas.style.transition = 'opacity 0.5s ease';
       canvas.style.opacity = '0';
       setTimeout(() => {
         canvas.style.display = 'none';
-        nextBtn.style.display = 'inline-block';
-      }, 600);
+        if (nextBtn) nextBtn.style.display = 'inline-block';
+      }, 500);
     }
   }
 
-  // Events for Touch (Tablet/Phone) & Mouse
-  canvas.addEventListener('mousedown', () => isScratching = true);
-  canvas.addEventListener('mouseup', () => isScratching = false);
-  canvas.addEventListener('mousemove', scratch);
+  // Touch Events (Tablet ke liye zaroori)
+  canvas.addEventListener('touchstart', startScratch, { passive: false });
+  canvas.addEventListener('touchmove', scratch, { passive: false });
+  canvas.addEventListener('touchend', stopScratch);
 
-  canvas.addEventListener('touchstart', (e) => {
-    isScratching = true;
-    scratch(e);
-  });
-  canvas.addEventListener('touchend', () => isScratching = false);
-  canvas.addEventListener('touchmove', scratch);
+  // Mouse Events
+  canvas.addEventListener('mousedown', startScratch);
+  canvas.addEventListener('mousemove', scratch);
+  canvas.addEventListener('mouseup', stopScratch);
 }
